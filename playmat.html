@@ -1,0 +1,213 @@
+<!--
+Pokemon Playmat Layout (HTML + CSS)
+
+This single-file demo recreates the playmat layout from the image you provided
+and overlays interactive, labeled zones: Active spot, bench slots, prize slots,
+deck, discard, and player/computer areas.
+
+Instructions:
+- Open this file in a browser to view.
+- The overlay zones are clickable and will show a tooltip with the zone name.
+- Feel free to ask for exact pixel tweaks, colors, or to make zones draggable.
+-->
+
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Pokémon Playmat Layout — Replica</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <style>
+    :root{
+      --playmat-width: 1000px; /* base width for scaling */
+      --accent: rgba(96,165,250,0.14);
+      --zone-border: 2px solid rgba(0,0,0,0.45);
+      --zone-bg: rgba(255,255,255,0.02);
+    }
+    body{font-family: Inter, Arial, sans-serif; background:#f1f5f9; display:flex; gap:20px; padding:24px;}
+    .wrapper{max-width:1100px; width:100%; margin:0 auto}
+
+    /* Playmat container keeps aspect ratio and shows the provided image as background */
+    .playmat{
+      position:relative;
+      width:100%;
+      max-width:var(--playmat-width);
+      /* aspect ratio approx from the image */
+      aspect-ratio: 16 / 10;
+      background-image: url('/mnt/data/3cee2401-5b55-41fd-8762-ffbd5a801d8d.png');
+      background-size: cover;
+      background-repeat: no-repeat;
+      border-radius:12px;
+      box-shadow:0 8px 30px rgba(2,6,23,0.12);
+      overflow:visible;
+    }
+
+    /* Generic overlay zone styling */
+    .zone{
+      position:absolute;
+      border: 2px dashed rgba(0,0,0,0.25);
+      background: var(--zone-bg);
+      border-radius:6px;
+      display:flex; align-items:center; justify-content:center;
+      transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+      cursor:pointer;
+      padding:4px;
+    }
+    .zone:hover{ transform: translateY(-4px); box-shadow:0 10px 24px rgba(3,7,18,0.12); background:var(--accent);}    
+    .zone .label{ font-size:12px; color:#061024; text-align:center; font-weight:600; text-shadow:0 1px 0 #fff;}
+
+    /* Top row: opponent bench/prizes area */
+    /* Coordinates below are percentages relative to container (tweakable) */
+    /* Opponent bench (top center five small slots) */
+    .opp-bench-1{ left:32%; top:6.5%; width:7.4%; height:14%; }
+    .opp-bench-2{ left:41.2%; top:6.5%; width:7.4%; height:14%; }
+    .opp-bench-3{ left:50.4%; top:6.5%; width:7.4%; height:14%; }
+    .opp-bench-4{ left:59.6%; top:6.5%; width:7.4%; height:14%; }
+    .opp-bench-5{ left:68.8%; top:6.5%; width:7.4%; height:14%; }
+
+    /* Opponent prize slots (top-right vertical stack of 3x2) */
+    .opp-prize-1{ right:6.6%; top:6.6%; width:7.4%; height:13%; }
+    .opp-prize-2{ right:6.6%; top:21.8%; width:7.4%; height:13%; }
+    .opp-prize-3{ right:6.6%; top:37%; width:7.4%; height:13%; }
+
+    /* Opponent extra slots left side (two horizontal) */
+    .opp-extra-1{ left:6.4%; top:17%; width:11%; height:14%; }
+    .opp-extra-2{ left:18.6%; top:17%; width:11%; height:14%; }
+
+    /* Active zones (center top for opponent active, center bottom for player active) */
+    .opp-active{ left:42%; top:18.6%; width:15%; height:20%; border-style:solid; }
+    .player-active{ left:42%; bottom:18.6%; width:15%; height:20%; border-style:solid; }
+
+    /* Player bench (bottom center five slots) */
+    .player-bench-1{ left:19%; bottom:6.6%; width:9.2%; height:18%; }
+    .player-bench-2{ left:30.6%; bottom:6.6%; width:9.2%; height:18%; }
+    .player-bench-3{ left:42.2%; bottom:6.6%; width:9.2%; height:18%; }
+    .player-bench-4{ left:53.8%; bottom:6.6%; width:9.2%; height:18%; }
+    .player-bench-5{ left:65.4%; bottom:6.6%; width:9.2%; height:18%; }
+
+    /* Player prize slots bottom-left vertical */
+    .player-prize-1{ left:6.4%; bottom:10%; width:11%; height:12%; }
+    .player-prize-2{ left:6.4%; bottom:22.6%; width:11%; height:12%; }
+    .player-prize-3{ left:6.4%; bottom:35.2%; width:11%; height:12%; }
+
+    /* Player extra slots bottom-right two horizontal */
+    .player-extra-1{ right:6.6%; bottom:17%; width:11%; height:14%; }
+    .player-extra-2{ right:18.6%; bottom:17%; width:11%; height:14%; }
+
+    /* Deck & Discard on both sides near outer edges */
+    .player-deck{ right:6.6%; bottom:6.6%; width:7.8%; height:12%; }
+    .player-discard{ right:6.6%; bottom:20.6%; width:7.8%; height:12%; }
+    .opp-deck{ left:6.6%; top:6.6%; width:7.8%; height:12%; }
+    .opp-discard{ left:6.6%; top:20.6%; width:7.8%; height:12%; }
+
+    /* small UI under mat */
+    .controls{ margin-top:12px; display:flex; gap:8px; align-items:center; }
+    .panel{ margin-top:10px; }
+
+    /* Responsive tuning: shrink borders on small screens */
+    @media (max-width:700px){
+      .zone{ border-width:1px; font-size:11px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <h2 style="margin:6px 0 12px 0">Playmat Replica — Interactive Zones</h2>
+
+    <div class="playmat" id="playmat">
+
+      <!-- Opponent bench slots (top row) -->
+      <div class="zone opp-bench-1" data-zone="Opp Bench 1"><div class="label">Opp Bench 1</div></div>
+      <div class="zone opp-bench-2" data-zone="Opp Bench 2"><div class="label">Opp Bench 2</div></div>
+      <div class="zone opp-bench-3" data-zone="Opp Bench 3"><div class="label">Opp Bench 3</div></div>
+      <div class="zone opp-bench-4" data-zone="Opp Bench 4"><div class="label">Opp Bench 4</div></div>
+      <div class="zone opp-bench-5" data-zone="Opp Bench 5"><div class="label">Opp Bench 5</div></div>
+
+      <!-- Opponent prizes (right column) -->
+      <div class="zone opp-prize-1" data-zone="Opp Prize 1"><div class="label">Prize 1</div></div>
+      <div class="zone opp-prize-2" data-zone="Opp Prize 2"><div class="label">Prize 2</div></div>
+      <div class="zone opp-prize-3" data-zone="Opp Prize 3"><div class="label">Prize 3</div></div>
+
+      <!-- Opponent deck/discard (left side) -->
+      <div class="zone opp-deck" data-zone="Opp Deck"><div class="label">Deck</div></div>
+      <div class="zone opp-discard" data-zone="Opp Discard"><div class="label">Discard</div></div>
+
+      <!-- Opponent extras (left) -->
+      <div class="zone opp-extra-1" data-zone="Opp Extra 1"><div class="label">Extra A</div></div>
+      <div class="zone opp-extra-2" data-zone="Opp Extra 2"><div class="label">Extra B</div></div>
+
+      <!-- Opponent Active (center-top) -->
+      <div class="zone opp-active" data-zone="Opp Active"><div class="label">Opp Active</div></div>
+
+      <!-- Player Active (center-bottom) -->
+      <div class="zone player-active" data-zone="Your Active"><div class="label">Your Active</div></div>
+
+      <!-- Player bench slots (bottom row) -->
+      <div class="zone player-bench-1" data-zone="Bench 1"><div class="label">Bench 1</div></div>
+      <div class="zone player-bench-2" data-zone="Bench 2"><div class="label">Bench 2</div></div>
+      <div class="zone player-bench-3" data-zone="Bench 3"><div class="label">Bench 3</div></div>
+      <div class="zone player-bench-4" data-zone="Bench 4"><div class="label">Bench 4</div></div>
+      <div class="zone player-bench-5" data-zone="Bench 5"><div class="label">Bench 5</div></div>
+
+      <!-- Player prizes (left) -->
+      <div class="zone player-prize-1" data-zone="Prize 1"><div class="label">Prize 1</div></div>
+      <div class="zone player-prize-2" data-zone="Prize 2"><div class="label">Prize 2</div></div>
+      <div class="zone player-prize-3" data-zone="Prize 3"><div class="label">Prize 3</div></div>
+
+      <!-- Player deck & discard (right side) -->
+      <div class="zone player-deck" data-zone="Deck"><div class="label">Deck</div></div>
+      <div class="zone player-discard" data-zone="Discard"><div class="label">Discard</div></div>
+
+      <!-- Player extras (right bottom) -->
+      <div class="zone player-extra-1" data-zone="Extra A"><div class="label">Extra A</div></div>
+      <div class="zone player-extra-2" data-zone="Extra B"><div class="label">Extra B</div></div>
+
+    </div>
+
+    <div class="panel">
+      <div class="controls">
+        <button id="btn-toggle-labels">Toggle Labels</button>
+        <button id="btn-highlight-active">Highlight Active Zones</button>
+        <div id="info" style="margin-left:12px;color:#334155;font-size:14px">Click any zone to see its name.</div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Interactive behavior for demo: clicking a zone shows its name and toggles highlight
+    const zones = document.querySelectorAll('.zone');
+    const info = document.getElementById('info');
+    let labelsVisible = true;
+
+    zones.forEach(z => {
+      z.addEventListener('click', () => {
+        const name = z.dataset.zone || 'Zone';
+        info.textContent = 'Selected zone: ' + name;
+        // pulse animation
+        z.animate([
+          { transform: 'scale(1)' },
+          { transform: 'scale(1.04)' },
+          { transform: 'scale(1)' }
+        ], { duration: 260 });
+      });
+    });
+
+    document.getElementById('btn-toggle-labels').onclick = () => {
+      labelsVisible = !labelsVisible;
+      document.querySelectorAll('.zone .label').forEach(l => l.style.display = labelsVisible ? 'block' : 'none');
+    };
+
+    document.getElementById('btn-highlight-active').onclick = () => {
+      document.querySelectorAll('.player-active, .opp-active').forEach(a => {
+        a.style.boxShadow = '0 12px 30px rgba(99,102,241,0.25)';
+        a.style.border = '3px solid rgba(99,102,241,0.9)';
+        setTimeout(()=>{
+          a.style.boxShadow = '';
+          a.style.border = '2px dashed rgba(0,0,0,0.25)';
+        }, 1800);
+      });
+    };
+  </script>
+</body>
+</html>
