@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Trinimon TCG — Level 1 (Browser)</title>
+  <style>
+
+  </style>
+</head>
+<body>
+
+<h1>Pokémon TCG — Level 1 (Browser)</h1>
+<p class="small">Simplified Level 1 rules. Player goes first. Click log for details. Game auto-enforces rules listed by you.</p>
+
+<div class="row">
+  <div class="col zone" style="flex:1 1 420px;">
+    <h2>Your Field</h2>
+    <div id="player-info" class="small"></div>
+
+    <div>
+      <h3>Active Pokémon</h3>
+      <div id="player-active" class="card"></div>
+    </div>
+
+    <div>
+      <h3>Bench (up to 5)</h3>
+      <div class="bench-grid" id="player-bench"></div>
+      <div class="small">Click a bench card to select it as your Active (only allowed during setup).</div>
+    </div>
+
+    <div>
+      <h3>Your Hand</h3>
+      <div class="hand" id="player-hand"></div>
+    </div>
+
+    <div style="margin-top:8px;">
+      <button id="btn-play-card">Play Card</button>
+      <button id="btn-attach-energy">Attach Energy</button>
+      <button id="btn-play-supporter">Play Supporter</button>
+      <button id="btn-play-item">Play Item</button>
+      <button id="btn-evolve">Evolve</button>
+      <button id="btn-attack">Attack</button>
+      <button id="btn-end-turn">End Turn</button>
+    </div>
+
+    <div style="margin-top:8px;">
+      <div class="small">Deck: <span id="player-deck-count">60</span> | Discard: <span id="player-discard-count">0</span> | Prizes left: <span id="player-prizes">6</span></div>
+      <div class="small">Energy attached this turn: <span id="player-energy-attached">0</span> | Supporter used: <span id="player-supporter-used">no</span></div>
+    </div>
+  </div>
+
+  <div class="col zone" style="flex:1 1 420px;">
+    <h2>Computer Field</h2>
+    <div id="computer-info" class="small"></div>
+
+    <div>
+      <h3>Active Pokémon</h3>
+      <div id="computer-active" class="card"></div>
+    </div>
+
+    <div>
+      <h3>Bench</h3>
+      <div class="bench-grid" id="computer-bench"></div>
+    </div>
+
+    <div style="margin-top:8px;">
+      <div class="small">Deck: <span id="computer-deck-count">60</span> | Discard: <span id="computer-discard-count">0</span> | Prizes left: <span id="computer-prizes">6</span></div>
+      <div class="small">Energy attached this turn: <span id="computer-energy-attached">0</span> | Supporter used: <span id="computer-supporter-used">no</span></div>
+    </div>
+
+    <div style="margin-top:16px;">
+      <button id="btn-reveal-state">Reveal Computer State (for debugging)</button>
+    </div>
+
+  </div>
+
+  <div class="col" style="flex:0 1 360px;">
+    <h2>Game Log</h2>
+    <div id="log"></div>
+
+    <h3 style="margin-top:8px;">Game Controls</h3>
+    <div>
+      <button id="btn-new-game">New Game</button>
+      <button id="btn-resume-setup" disabled>Resume Setup</button>
+    </div>
+
+    <div style="margin-top:8px;" class="small">
+      <b>Note:</b> During setup, place Pokémon onto bench by clicking cards of type 'Pokemon (Basic)'. Then choose one bench card to be Active. Mulligans allowed up to 3 total.
+    </div>
+  </div>
+</div>
+
+
+
+</body>
+</html>
